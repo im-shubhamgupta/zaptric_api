@@ -11,10 +11,11 @@ use Illuminate\Support\Facades\Auth; /*for login*/
 
 class ApiAuthController extends Controller
 {
+    protected $response = array('check'=> 'failed', 'message' => 'something Error');
     public function register(Request $request)
     {
-        $response = array('check'=> 'failed' , 'message'=> 'Something Error');//,'err_code'=>500
-
+        //,'err_code'=>500
+        // print_r($request->all());
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -22,12 +23,11 @@ class ApiAuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-
         if ($validator->fails()) {
-            $response['message'] = 'validation error';
-            $response['error'] = $validator->errors();
+            $this->response['message'] = 'validation error';
+            $this->response['error'] = $validator->errors();
             $err_code = 422;
-            return response()->json($response, $err_code);
+            return response()->json($this->response, $err_code);
         }
 
         $user = User::create([
@@ -37,64 +37,62 @@ class ApiAuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
         if($user){
-            $response['check'] = 'success';
-            $response['message'] = 'User successfully registered';
+            $this->response['check'] = 'success';
+            $this->response['message'] = 'User successfully registered';
             $err_code = 201;
         }else{
-            $response['message'] = 'Registration Failed';
+            $this->response['message'] = 'Registration Failed';
             $err_code = 500;
         }
 
-        return response()->json($response, $err_code);
+        return response()->json($this->response, $err_code);
     }
 
 
     public function login(Request $request)
     {
-        // Validation
+        $key = isset($request['mobile']) ? 'mobile' : 'email';
+
         $credentials = $request->validate([
-            'email' => 'required|string|email',
-            // 'login' => 'required|string',
+            $key => 'required|string',
             'password' => 'required|string',
         ]);
-
-        // Check credentials
+        // // Check credentials
         if (!Auth::attempt($credentials)) {
-            $response['message'] = 'Invalid credentials';
+            $this->response['message'] = 'Invalid credentials';
             // $response['error'] = $credentials->errors();
             $err_code = 401;
-            return response()->json($response, $err_code);
+            return response()->json($this->response, $err_code);
         }
-
         // Authenticate and generate token
         $user = Auth::user();
         $token = $user->createToken('API Token')->plainTextToken;
 
         // Return success response with token
         if($user){
-            $response['check'] = 'success';
-            $response['message'] = 'Login successful';
-            $response['user'] = $user;
-            $response['token'] = $token;
+            $this->response['check'] = 'success';
+            $this->response['message'] = 'Login successful';
+            $this->response['user'] = $user;
+            $this->response['token'] = $token;
             $err_code = 200;
         }else{
-            $response['message'] = 'Login Failed';
+            $this->response['message'] = 'Login Failed';
             $err_code = 500;
         }
-        return response()->json($response, 200);
+        return response()->json($this->response, 200);
     }
     public function logout(Request $request)
     {
         $res = $request->user()->currentAccessToken()->delete();
         if($res){
-            $response['check'] = 'success';
-            $response['message'] = 'Logout successful';
+            $this->response['check'] = 'success';
+            $this->response['message'] = 'Logout successful';
             $err_code = 200;
         }else{
-            $response['message'] = 'Logout Failed';
+            $this->response['message'] = 'Logout Failed';
             $err_code = 500;
         }
-        return response()->json($response, $err_code);
+        return response()->json($this->response, $err_code);
     }
 
 }

@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\controllers\RiderController;
+use App\Http\controllers\api\UserController;
 use App\Http\controllers\api\ApiAuthController;
 use App\Http\Controllers\api\RazorpayController;
 
@@ -39,16 +39,14 @@ Route::post('/login', [ApiAuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [ApiAuthController::class, 'logout']);
 
 
-// Route::any('check',function(){
-Route::any('rider/add',[RiderController::class,'add_rider']);
-Route::any('rider/edit/{id}',[RiderController::class,'add_rider']);
-Route::any('rider',[RiderController::class,'view_rider']);
-Route::any('get_rider/{id}',[RiderController::class,'get_rider']);
-Route::delete('rider/delete/{id}',[RiderController::class,'delete_rider']);
+Route::get('user/add-address',[UserController::class,'add_address']);
+Route::get('user/edit-address/{id}',[UserController::class,'add_address']);
+Route::get('user-address/{id}',[UserController::class,'get_user_address']);
+Route::delete('user/delete/{id}',[UserController::class,'delete_shipping_address']);
 
 Route::post('/payment/create-order', [RazorpayController::class, 'createOrder']);
-Route::post('/payment/verify-payment', [RazorpayController::class, 'verifyPayment']);
-Route::post('/payment/fetch-order', [RazorpayController::class, 'paymentStatus']);
+// Route::post('/payment/verify-payment', [RazorpayController::class, 'verifyPayment']);
+Route::post('/payment/order-status', [RazorpayController::class, 'paymentStatus']);
 Route::post('/payment/fetch-all-payment', [RazorpayController::class, 'fetchAllPayments']);
 
 
