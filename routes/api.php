@@ -34,16 +34,23 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
+Route::middleware('throttle:strict-limit')->group(function () {
+    Route::POST('user/add-address', [UserController::class, 'add_address']);
+    Route::PUT('user/edit-address/{id}', [UserController::class, 'add_address']);
+    Route::get('user-address/{id}', [UserController::class, 'get_user_address']);
+    Route::delete('user/delete/{id}', [UserController::class, 'delete_shipping_address']);
+});
+
+
 Route::post('/register', [ApiAuthController::class, 'register']);
 Route::post('/login', [ApiAuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [ApiAuthController::class, 'logout']);
-
-
-Route::get('user/add-address',[UserController::class,'add_address']);
-Route::get('user/edit-address/{id}',[UserController::class,'add_address']);
+/*
+Route::POST('user/add-address',[UserController::class,'add_address']);
+Route::PUT('user/edit-address/{id}',[UserController::class,'add_address']);
 Route::get('user-address/{id}',[UserController::class,'get_user_address']);
 Route::delete('user/delete/{id}',[UserController::class,'delete_shipping_address']);
-
+*/
 Route::post('/payment/create-order', [RazorpayController::class, 'createOrder']);
 // Route::post('/payment/verify-payment', [RazorpayController::class, 'verifyPayment']);
 Route::post('/payment/order-status', [RazorpayController::class, 'paymentStatus']);
