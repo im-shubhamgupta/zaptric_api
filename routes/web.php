@@ -26,3 +26,8 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 });
+
+Route::get('/prod', function () {
+    echo "helkjosaisdihdhffouhkjbjb";
+    die('stop');
+});
